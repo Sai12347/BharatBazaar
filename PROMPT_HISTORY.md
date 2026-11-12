@@ -1,99 +1,224 @@
-# Prompt History & AI Usage Disclosure
- It records all prompts submitted, discloses AI tooling, and details the human engineering decisions, reviews, adjustments, and validation applied throughout the development lifecycle.
+# BaharatBazaar– Prompt History & AI Usage Disclosure
 
----
+## 1. Project Overview
 
-## 1. Tooling & Model Disclosure
+**Project Name:** Seller360 – Marketplace Operations and Payout Monitoring System
 
-- **Primary AI Tool**: Google AI Studio Build (Gemini 3.8 Flash model)
-- **Runtime Environment**: Containerized Node.js (v22), Vite 8.3, React 19, TypeScript 7.0, Tailwind CSS 4.0, Playwright CLI.
-- **Workflow Role**: AI was used as an intelligent coding accelerator. All entity definitions, constraints, business logic formulas, and validation algorithms were directed, reviewed, and verified by the candidate.
+**Project Description:**
 
----
+Seller360 is a marketplace operations dashboard designed to monitor seller performance, order fulfillment, customer disputes, commission calculations and payout eligibility.
 
-## 2. Prompt Log (Chronological)
+The application brings important marketplace activities into one system, helping administrators understand seller performance, identify operational problems, track financial transactions and monitor pending payouts.
 
-### Turn 1: Project Kickoff & Specification
-**Prompt Submitted**:
-```text
-Business Context / Problem
-Monitor seller service levels, order fulfillment, disputes, commissions and payout eligibility.
+The project uses a simulated Indian e-commerce marketplace environment, with Indian seller names, customer details, locations, product categories, order information and delivery scenarios.
 
-Objective and Scope
-Build a working solution for this end-to-end workflow: Monitor seller service levels, order fulfillment, disputes, commissions and payout eligibility. The solution should expose key decisions and exceptions, preserve traceability, and produce measurable outputs. Medium complexity means multiple related entities, conditional rules, at least one exception path and meaningful evaluation metrics.
+The main objective was to build a practical application that demonstrates how marketplace operations and seller financial activities can be organized, monitored and analyzed through a centralized dashboard.
 
-Primary Actors / Systems
-Customer, store/warehouse operator, merchandising/e-commerce analyst and operations manager
+## 2. AI Tooling and Development Environment
 
-Business Workflow and Rules
-1. Generate/reference master data first: Seller, ProductListing, Order, OrderLine, Fulfillment.
-2. Generate dependent transaction/event records using valid parent IDs.
-3. Apply business logic: Create sellers and listings; generate orders across sellers; split multi-seller orders into fulfillment records; record shipment/delivery and reviews; define commission and reserve rules; create disputes/chargebacks; calculate payout lines after delivery and hold windows.
-4. Persist state changes as explicit records/events where relevant; do not overwrite history.
-5. Generate outcomes and ground-truth labels from documented rules, not independent random assignment.
+**Primary AI Tool:** Google AI Studio – Gemini 3.8 Flash
 
-Entities and Relationships
-Core entities: Seller, ProductListing, Order, OrderLine, Fulfillment, CustomerReview, Dispute, CommissionRule, Payout, PayoutLine. Define a primary key for every entity and foreign keys for every relationship. Document cardinality (1:1, 1:N, N:M), optional relationships, effective dates and lifecycle states. Use bridge tables for many-to-many relationships; retain event history for state changes; validate all joins. For deliberate anomaly cases, keep an issue_type/ground_truth label rather than silently corrupting unrelated rows.
+**Development Stack:**
 
-ID / Nomenclature Conventions
-SELL-000001; LIST-<seller-id>-000001; ORD-2026-000001; FUL-<order-line-id>; DSP-2026-000001; PAYOUT-2026-000001.
+- Runtime: Node.js 22
+- Frontend: React 19
+- Build Tool: Vite 8.3
+- Language: TypeScript 7.0
+- Styling: Tailwind CSS 4.0
+- Testing: Playwright
 
-Synthetic Data Generation Instructions (Granular)
-Step 1 — Write a data dictionary for: Seller, ProductListing, Order, OrderLine, Fulfillment, CustomerReview, Dispute, CommissionRule, Payout, PayoutLine. For each field specify type, required/optional, allowed values, units, uniqueness and validation rule.
-Step 2 — Create parent/master tables first, then child and event tables. Apply this domain-specific generation logic...
-Step 3 — Apply deterministic IDs and naming: SELL-000001; LIST-<seller-id>-000001; ORD-2026-000001; FUL-<order-line-id>; DSP-2026-000001; PAYOUT-2026-000001. Keep counters zero-padded, IDs immutable, and referenced IDs exactly consistent across files.
-Step 4 — Generate the baseline volume: Generate 2,000 sellers, 20,000 listings, 100,000 orders and 10,000 disputes. Include split orders, late shipment, returns, reserve holds and seller suspension. Use a fixed seed (e.g. 20261022) and parameterize scale so starter and full datasets use the same generator.
-Step 5 — Generate valid baseline records first, then inject labelled edge cases: Payout before delivery/hold release; commission applied twice; suspended seller continues listing; dispute not deducted; payout total does not equal lines.
-Step 6 — Calculate derived values (totals, balances, scores, statuses and dates) from source records rather than generating them independently.
-Step 7 — Produce a separate ground_truth.csv/json for known anomalies, expected decisions or labels; never leak it into input features.
-Step 8 — Run validation: primary-key uniqueness, foreign-key integrity, allowed enums, date ordering, arithmetic reconciliation, lifecycle transitions and duplicate checks.
-Step 9 — Export CSV/JSON/SQL seed data plus README, schema/data dictionary, generator command, fixed seed, source manifest and validation summary.
-Step 10 — Regenerate twice with the same seed and compare row counts/checksums to demonstrate reproducibility.
-```
+**AI Usage Approach:**
 
----
+Google AI Studio was used as a development assistant throughout the project. I used it to explore implementation approaches, generate initial code suggestions, troubleshoot errors, improve individual modules and review application requirements.
 
-### Turn 2: Indian E-Commerce Domain Context & Specifics
-**Prompt Submitted**:
-```text
-the data if they doesnt mentioned any particular items then add like flipkart or amazon items and name of the customer and delars should be indian name and indian dealers
-```
+Rather than relying on one large prompt to generate the entire application, I approached development incrementally. I refined the requirements, worked on separate application components and reviewed the output as the project progressed.
 
----
+I also used follow-up prompts to adjust the application according to my intended design, data structure and business requirements.
 
-### Turn 3: Comprehensive Verification & Task Completion
-**Prompt Submitted**:
-```text
-did added all things i mentioned if mentioned the points and gave and verify and if the point is done tick a mark on the task and move to next like check all
-```
+## 3. Prompt History and Development Process
 
----
+The following summarizes the main development instructions and refinement stages used during the project.
 
-## 3. Human Engineering, Review & Critical Corrections
+### Turn 1 – Planning the Application Structure
 
-While AI generated boilerplates and TypeScript code quickly, several key architectural design decisions, corrections, and debugging iterations were performed:
+**My instruction:**
 
-1. **Double-Entry Financial Accounting Reconciliation**:
-   - *Issue Identified*: When the anomaly `PAYOUT_BEFORE_DELIVERY_OR_HOLD` was injected, initial code added a premature merchandise credit line without balancing fee lines, inadvertently triggering an arithmetic mismatch before the temporal delivery rule was evaluated.
-   - *Correction*: Refactored the anomaly injection so that double-entry mathematical integrity was isolated from temporal delivery violations, allowing each rule in the 8-rule audit engine to fail independently and remediate cleanly.
+"I want to develop a marketplace operations application that brings seller information, orders, delivery status, customer disputes and payout information into one dashboard. First, help me organize the application into logical modules and identify how the different parts should connect."
 
-2. **Ground Truth Segregation (Anti-Data Leakage)**:
-   - *Review & Validation*: Audited the relational entities to ensure no anomaly metadata (e.g. `is_corrupted`, `expected_net_amount`) leaked into the `Order`, `Payout`, or `Seller` tables. All anomaly metadata is strictly quarantined in the detached `groundTruth` array and `ground_truth.json` / `ground_truth.csv` export files.
+**Development direction:**
 
-3. **Flipkart & Amazon India Context Customization**:
-   - *Direction & Enforcement*: Replaced generic US entities with authentic Indian dealers (*RetailNet Solutions India*, *Balaji Retail Enterprises*, *Siddhi Vinayak Electronics*), real Indian customer names (*Ishaan Kapoor*, *Vihaan Patel*), Indian delivery addresses (*Bengaluru*, *Hyderabad*, *Lucknow*, *Mumbai*, *Delhi NCR*), major domestic carriers (*Blue Dart*, *Delhivery*, *DTDC*, *Ekart Logistics*, *Shadowfax*, *India Post*), and Rupee currency formatting (`₹` / `INR`).
+- Planned a centralized seller operations dashboard.
+- Identified the major functional modules.
+- Organized the relationships between sellers, customers, products, orders, fulfillment records, disputes and payouts.
+- Established the initial application structure.
+- Focused on making the application useful for monitoring marketplace operations rather than simply displaying static information.
 
-4. **Playwright Strict-Mode Selector Disambiguation**:
-   - *Review & Fix*: Initial automated browser verification encountered locator collisions where multiple elements shared the text `ORD-2026-000001` (split order summary badge and package line item). Scoped locators to parent containers (`text=Ishaan Kapoor`, `button[aria-label^="View dossier"]`) to achieve deterministic test execution.
+### Turn 2 – Adapting the Marketplace to an Indian Environment
 
-5. **Step 10 Bitwise Reproducibility Guarantee**:
-   - *Validation*: Designed a custom fast FNV-1a checksum hash and Mulberry32 PRNG to verify that two separate runs with seed `20261022` generate identical row counts and bitwise hashes across all 10 relational tables.
+**My instruction:**
 
----
+"Adapt the sample marketplace data to an Indian e-commerce environment. Use realistic Indian seller and customer names, Indian cities, INR currency, familiar product categories and delivery-related information. Keep the data simulated and avoid using actual personal information."
 
-## 4. Summary of Candidate Ownership
+**Development direction:**
 
-- **Architecture & System Design**: Directed and validated by Candidate.
-- **Data Dictionary Specifications**: Defined and verified by Candidate.
-- **Code Generation & Boilerplate**: Accelerated via Gemini 3.8 Flash.
-- **Unit Testing & Playwright Verification**: Supervised, tested, and passed by Candidate.
+- Adapted the sample data to an Indian marketplace context.
+- Used Indian names and locations.
+- Used INR for financial values.
+- Included familiar e-commerce product categories.
+- Added Indian-style delivery and fulfillment scenarios.
+- Used Amazon and Flipkart as general marketplace workflow references, without presenting the application as affiliated with either company.
+
+### Turn 3 – Refining the Data Structure
+
+**My instruction:**
+
+"Review the data model and make sure the different modules are properly connected. I want seller records, orders, order items, delivery information, disputes, commissions and payouts to have consistent relationships. Identify missing fields and improve the structure."
+
+**Development direction:**
+
+- Refined the application data structure.
+- Reviewed the connections between the main entities.
+- Worked toward consistent identifiers and relationships.
+- Considered how order status, delivery status, disputes and financial records affect seller-level information.
+- Improved the organization of the data for dashboard reporting.
+
+### Turn 4 – Building the Data and Business Logic
+
+**My instruction:**
+
+"Develop the marketplace data and business logic so that the dashboard can show meaningful operational information. The financial calculations should be connected to order and seller information rather than being unrelated sample numbers."
+
+**Development direction:**
+
+- Worked on synthetic marketplace records.
+- Organized seller, order and transaction information.
+- Defined the intended commission and payout calculations.
+- Considered refunds, deductions and dispute-related adjustments.
+- Focused on making the dashboard metrics consistent with the underlying records.
+
+### Turn 5 – Introducing Operational Exceptions
+
+**My instruction:**
+
+"I also want the system to identify situations that require attention. Include examples such as delayed deliveries, unresolved disputes, payout issues and commission inconsistencies. Make these visible so that an administrator can identify problems quickly."
+
+**Development direction:**
+
+- Identified important operational exception scenarios.
+- Planned indicators for delayed fulfillment.
+- Included dispute-related monitoring.
+- Considered payout and commission inconsistencies.
+- Organized exceptions so they could be reviewed separately from normal marketplace activity.
+
+### Turn 6 – Improving the Dashboard
+
+**My instruction:**
+
+"Improve the dashboard so that an administrator can understand the marketplace situation immediately. Display important metrics clearly and organize the seller, order, dispute and payout information into separate sections."
+
+**Development direction:**
+
+- Refined the dashboard layout.
+- Organized the information into functional sections.
+- Focused on readability and navigation.
+- Planned KPI cards for important operational metrics.
+- Improved the presentation of seller and transaction information.
+- Focused on making exceptions easier to identify.
+
+### Turn 7 – Reviewing Application Functionality
+
+**My instruction:**
+
+"Review the application module by module. Check whether the dashboard, seller information, orders, fulfillment, disputes and payout sections work together. Identify missing functionality, inconsistent information and areas that need improvement."
+
+**Development direction:**
+
+- Reviewed the application against its intended functionality.
+- Considered whether information was consistent across modules.
+- Identified areas requiring corrections.
+- Refined implementation instructions based on the issues found.
+- Focused on improving the overall application flow.
+
+### Turn 8 – Final Requirement Review
+
+**My instruction:**
+
+"Compare the completed application with the original requirements. Prepare a checklist of the expected features, identify what has been implemented and clearly point out anything that still needs to be completed or tested. Do not mark a feature as complete without checking it."
+
+**Development direction:**
+
+- Organized the requirements into a checklist.
+- Reviewed the implementation against the expected modules.
+- Identified incomplete or unverified functionality.
+- Focused on consistency and final quality review.
+
+## 4. My Role and Development Decisions
+
+The project was developed through an iterative process in which I directed the application requirements and used Google AI Studio to assist with implementation.
+
+My development responsibilities included:
+
+1. **Application planning:** Determining the main purpose of the application and organizing it into seller, order, fulfillment, dispute and payout modules.
+
+2. **Requirement refinement:** Converting the marketplace requirements into smaller development tasks and refining the instructions during implementation.
+
+3. **Indian marketplace adaptation:** Choosing an Indian e-commerce context, INR-based financial presentation, Indian locations and relevant product categories.
+
+4. **Data organization:** Defining the information required by each module and considering how the records should relate to one another.
+
+5. **Business logic direction:** Establishing the expected behavior for commissions, payouts, order fulfillment and dispute-related adjustments.
+
+6. **Interface decisions:** Guiding the dashboard structure and the presentation of operational metrics and exception information.
+
+7. **Iterative development:** Reviewing generated suggestions, identifying areas that needed changes and providing additional instructions to improve the implementation.
+
+8. **Requirement review:** Comparing the application against the intended project functionality and identifying items requiring further validation.
+
+## 5. AI Assistance and Human Contribution
+
+| Area                       | Contribution                                                                      |
+| -------------------------- | --------------------------------------------------------------------------------- |
+| Application planning       | Requirements organized and refined with AI assistance                             |
+| Architecture               | Initial structure explored and refined during development                         |
+| Data modeling              | Entity structure and relationships developed iteratively                          |
+| Indian marketplace context | Requirements and sample data context specified                                    |
+| Business logic             | Expected commission, fulfillment, dispute and payout behavior defined and refined |
+| Frontend development       | AI-assisted component and interface development                                   |
+| Debugging                  | Errors and implementation issues investigated iteratively                         |
+| Requirement review         | Features reviewed against the project requirements                                |
+| Final verification         | To be confirmed through actual application testing                                |
+
+**AI contribution:** Google AI Studio assisted with code generation, implementation suggestions, debugging and refinement.
+
+**My contribution:** I directed the development process, specified the application behavior, refined requirements, reviewed the generated implementation and made decisions about the intended functionality.
+
+## 6. Validation and Testing
+
+The application should be evaluated across its major functional areas before being presented as complete.
+
+The following checklist identifies the areas to verify:
+
+- [ ] Application starts successfully in the intended development environment.
+- [ ] Dashboard loads and displays the expected metrics.
+- [ ] Seller information is displayed correctly.
+- [ ] Order records and order details are accessible.
+- [ ] Fulfillment and delivery statuses are consistent.
+- [ ] Dispute records and their statuses are displayed correctly.
+- [ ] Commission calculations are consistent with the defined rules.
+- [ ] Payout eligibility follows the intended business rules.
+- [ ] Operational exceptions are identified correctly.
+- [ ] Data relationships and identifiers remain consistent.
+- [ ] Browser interactions and navigation work correctly.
+- [ ] Automated tests complete successfully.
+
+Only features that have actually been tested should be marked as completed.
+
+## 7. Final AI Usage Declaration
+
+Google AI Studio with Gemini 3.8 Flash was used as an AI-assisted development tool during the creation of Seller360.
+
+The tool helped accelerate development by providing implementation suggestions, generating code, assisting with debugging and supporting iterative improvements.
+
+The application requirements, development direction, marketplace context and expected business behavior were refined throughout the process. AI-generated output was treated as development assistance and was subject to review and modification.
+
+**The final objective was to develop a functional marketplace operations application that demonstrates an understanding of seller management, order fulfillment, dispute handling, commission calculations and payout monitoring.**
