@@ -1,7 +1,5 @@
 # Prompt History & AI Usage Disclosure
-**YottaFlex AI Recruitment Drive • Submission Artifact**
-
-This document fulfills **Guideline 03: USE LLMs TRANSPARENTLY (PROMPT HISTORY REQUIRED)**. It records all prompts submitted, discloses AI tooling, and details the human engineering decisions, reviews, adjustments, and validation applied throughout the development lifecycle.
+ It records all prompts submitted, discloses AI tooling, and details the human engineering decisions, reviews, adjustments, and validation applied throughout the development lifecycle.
 
 ---
 
