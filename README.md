@@ -359,8 +359,8 @@ The objective is to verify that repeated generation with the same seed produces 
 Clone the repository:
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
-cd <REPOSITORY_NAME>
+git clone https://github.com/Sai12347/BharatBazaar
+cd BharatBazaar
 ```
 
 Install the dependencies:
