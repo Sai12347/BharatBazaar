@@ -1,0 +1,6 @@
+{
+  "name": "Marketplace Seller SLA, Fulfillment & Payout Engine",
+  "description": "End-to-end platform to monitor seller service levels, order fulfillment, disputes, commissions and payout eligibility with synthetic data generation, anomaly injection, and automated reconciliation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
